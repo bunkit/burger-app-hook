@@ -61,7 +61,6 @@ const mapStateToProps = (state) => {
     const LOCAL_STORAGE = JSON.parse(localStorage.getItem("dataAuth"));
 
     return {
-        // isAuthenticated: state.authReducer.token !== null
         isAuthenticated: LOCAL_STORAGE !== null,
     };
 };
