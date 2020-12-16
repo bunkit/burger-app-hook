@@ -1,0 +1,61 @@
+.Order {
+  width: 100%;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 3px #ccc;
+  padding: 10px;
+  margin: 10px auto;
+  box-sizing: border-box;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.Order li {
+  text-transform: capitalize;
+  border: 1px solid #eee;
+  padding: 10px;
+  margin: 10px 5px;
+  width: auto;
+  display: inline-block;
+  border-radius: 5px;
+  color: white;
+}
+.Order li.Meat {
+  background: linear-gradient(#7f3608, #702e05);
+}
+.Order li.Cheese {
+  background: linear-gradient(#f4d004, #d6bb22);
+}
+.Order li.Salad {
+  background: linear-gradient(#228c1d, #91ce50);
+}
+.Order li.Bacon {
+  background: linear-gradient(#bf3813, #c45e38);
+}
+
+.Price {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 16px;
+  margin: 0 -10px -11px;
+
+  padding: 10px;
+  background: #dddd;
+  /* border-radius: 5px; */
+  width: 100%;
+}
+
+.Cancel {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  text-transform: capitalize;
+  border: 1px solid #333;
+  padding: 10px;
+  width: auto;
+  display: inline-block;
+  border-radius: 5px;
+  background: #aaa;
+  cursor: pointer;
+  color: white;
+}
