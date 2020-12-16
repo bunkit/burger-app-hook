@@ -9,10 +9,10 @@ import Logout from "./containers/Auth/Logout";
 import * as actions from "./store/actions";
 import asyncComponent from "./hoc/asyncComponents/asyncComponents";
 
-const App = (props) => {
+const App = ({ onAutoLogin, isAuthenticated }) => {
     useEffect(() => {
-        props.onAutoLogin();
-    }, [props]);
+        onAutoLogin();
+    }, [onAutoLogin]);
     let routes = (
         <Switch>
             <Route exact path="/">
@@ -24,7 +24,7 @@ const App = (props) => {
         </Switch>
     );
 
-    if (props.isAuthenticated) {
+    if (isAuthenticated) {
         routes = (
             <Switch>
                 <Route exact path="/">
