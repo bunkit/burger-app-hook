@@ -14,7 +14,7 @@ import * as action from "../../store/actions/index";
 const BurgerBuilder = (props) => {
     const { onFetchIngredients } = props;
     const [purchasing, setPurchasing] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
 
     useEffect(() => {
         onFetchIngredients(
