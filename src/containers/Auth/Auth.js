@@ -49,7 +49,7 @@ const Auth = (props) => {
         },
         formValid: false,
     });
-    const [isLogin, setLogin] = useState(false);
+    const [isLogin, setLogin] = useState(true);
     const { buildingBurger, redirectPath, onSetAuthPath } = props;
 
     useEffect(() => {
@@ -89,7 +89,7 @@ const Auth = (props) => {
         for (const key in state.formElement) {
             formData[key] = state.formElement[key].value;
         }
-        props.onAuth(formData.email, formData.password);
+        props.onAuth(formData.email, formData.password, isLogin);
     };
 
     const switchModeHandler = (e) => {
