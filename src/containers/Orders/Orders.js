@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 
@@ -11,101 +11,88 @@ import Modal from "../../components/UI/Modal/Modal";
 import Aux from "../../hoc/Aux/Aux";
 import Button from "../../components/UI/Button/Button";
 
-class Orders extends Component {
-    state = {
-        modalCancel: false,
-        deliveryName: "",
-        address: "",
-        idOrder: "",
-    };
-
-    componentDidMount() {
+const Orders = (props) => {
+    const [modalCancel, setModalCancel] = useState(false);
+    const [deliveryName, setDeliveryName] = useState("");
+    const [address, setAddress] = useState("");
+    const [idOrder, setIdOrder] = useState("");
+    const { onOrderInit } = props;
+    useEffect(() => {
         const LOCAL_STORAGE = JSON.parse(localStorage.getItem("dataAuth"));
-        this.props.onOrderInit(LOCAL_STORAGE.token, LOCAL_STORAGE.userId);
-    }
+        onOrderInit(LOCAL_STORAGE.token, LOCAL_STORAGE.userId);
+    }, [onOrderInit]);
 
-    onCancelHandlerModal = (id, data) => {
+    const onCancelHandlerModal = (id, data) => {
         const address = `${data.street} ${data.zipCode} ${data.country}`;
-        this.setState({
-            modalCancel: true,
-            deliveryName: data.name,
-            address: address,
-            idOrder: id,
-        });
+        setModalCancel(true);
+        setDeliveryName(data.name);
+        setAddress(address);
+        setIdOrder(id);
     };
-    onNoHandler = (id) => {
-        this.setState({ modalCancel: false });
+    const onNoHandler = (id) => {
+        setModalCancel(false);
     };
-    onYesHandler = (id) => {
-        this.setState({ modalCancel: false });
+    const onYesHandler = (id) => {
+        setModalCancel(false);
         axios
-            .delete("/orders/" + id + ".json?auth=" + this.props.token)
+            .delete("/orders/" + id + ".json?auth=" + props.token)
             .then((response) => {
-                this.props.onOrderInit(this.props.token, this.props.userId);
+                props.onOrderInit(props.token, props.userId);
             })
             .catch((error) => {
                 console.log(error);
             });
     };
-    render() {
-        const LOCAL_STORAGE = JSON.parse(localStorage.getItem("dataAuth"));
-        let orderList = <Spinner />;
-        if (!this.props.loading) {
-            orderList = this.props.orders.map((item) => (
-                <Order
-                    key={item.id}
-                    orderData={item.orderData}
-                    ingredients={item.ingredients}
-                    price={item.price}
-                    cancelOrder={() =>
-                        this.onCancelHandlerModal(item.id, item.orderData)
-                    }
-                />
-            ));
-        }
-        let redirect = LOCAL_STORAGE ? null : <Redirect to="/" />;
-        return (
-            <Aux>
-                {redirect}
-                <Modal
-                    show={this.state.modalCancel}
-                    modalClosed={this.onNoHandler}
-                >
-                    <div style={{ textAlign: "center" }}>
-                        <h3>Please confirm to Cancel Order ?</h3>
-                        <div
-                            style={{
-                                textAlign: "left",
-                                display: "inline-block",
-                                margin: "auto",
-                            }}
-                        >
-                            <p>Deliver To :{this.state.deliveryName}</p>
-                            <p>{this.state.address}</p>
-                        </div>
-                        <div>
-                            <Button
-                                btnType={"Danger"}
-                                clicked={this.onNoHandler}
-                            >
-                                No
-                            </Button>
-                            <Button
-                                btnType={"Success"}
-                                clicked={() =>
-                                    this.onYesHandler(this.state.idOrder)
-                                }
-                            >
-                                Yes, Cancel Order
-                            </Button>
-                        </div>
-                    </div>
-                </Modal>
-                <div style={{ width: "80%", margin: "auto" }}>{orderList}</div>
-            </Aux>
-        );
+
+    const LOCAL_STORAGE = JSON.parse(localStorage.getItem("dataAuth"));
+    let orderList = <Spinner />;
+    if (!props.loading) {
+        orderList = props.orders.map((item) => (
+            <Order
+                key={item.id}
+                orderData={item.orderData}
+                ingredients={item.ingredients}
+                price={item.price}
+                cancelOrder={() =>
+                    onCancelHandlerModal(item.id, item.orderData)
+                }
+            />
+        ));
     }
-}
+    let redirect = LOCAL_STORAGE ? null : <Redirect to="/" />;
+    return (
+        <Aux>
+            {redirect}
+            <Modal show={modalCancel} modalClosed={onNoHandler}>
+                <div style={{ textAlign: "center" }}>
+                    <h3>Please confirm to Cancel Order ?</h3>
+                    <div
+                        style={{
+                            textAlign: "left",
+                            display: "inline-block",
+                            margin: "auto",
+                        }}
+                    >
+                        <p>Deliver To :{deliveryName}</p>
+                        <p>{address}</p>
+                    </div>
+                    <div>
+                        <Button btnType={"Danger"} clicked={onNoHandler}>
+                            No
+                        </Button>
+                        <Button
+                            btnType={"Success"}
+                            clicked={() => onYesHandler(idOrder)}
+                        >
+                            Yes, Cancel Order
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+            <div style={{ width: "80%", margin: "auto" }}>{orderList}</div>
+        </Aux>
+    );
+};
 
 const mapStateToProps = (state) => {
     return {
