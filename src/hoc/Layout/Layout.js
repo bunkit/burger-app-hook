@@ -11,9 +11,7 @@ const Layout = (props) => {
     const sideDrawerClosed = () => {
         setShowSideDrawer(false);
     };
-    // const sideDrawerOpen = () => {
-    //     setShowSideDrawer(true);
-    // };
+
     const sideDrawerToggle = () => {
         setShowSideDrawer((prevState) => !prevState);
     };
