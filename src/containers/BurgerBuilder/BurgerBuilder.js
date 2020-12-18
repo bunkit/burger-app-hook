@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { connec, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
@@ -35,12 +35,11 @@ const BurgerBuilder = (props) => {
     const isAuthenticated = useSelector(
         (state) => state.authReducer.token !== null
     );
-
     useEffect(() => {
-        // onFetchIngredients(
-        //     "https://react-my-burger-d4cec.firebaseio.com/ingredients.json"
-        // );
-    }, [onFetchIngredients]);
+        onFetchIngredients(
+            "https://react-my-burger-d4cec.firebaseio.com/ingredients.json"
+        );
+    }, []);
 
     const updatePurchaseState = (ingredients) => {
         const sum = Object.keys(ingredients)
