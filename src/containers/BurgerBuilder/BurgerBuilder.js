@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { connec, useDispatch, useSelector } from "react-redux";
 
 import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
@@ -12,14 +12,34 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import * as action from "../../store/actions/index";
 
 const BurgerBuilder = (props) => {
-    const { onFetchIngredients } = props;
     const [purchasing, setPurchasing] = useState(false);
     const [loading] = useState(false);
 
+    const dispatch = useDispatch();
+
+    // redux distpatching
+    const onAddIngredients = (ingredientName) =>
+        dispatch(action.addIngredient(ingredientName));
+    const onRemoveIngredients = (ingredientName) =>
+        dispatch(action.removeIngredient(ingredientName));
+    const onFetchIngredients = (url) => dispatch(action.fetchIngredients(url));
+    const onPurchaseInit = () => dispatch(action.purchaseInit());
+    const onSetAuthPath = (path) => dispatch(action.authSetPathRedeirect(path));
+
+    //reduxt parsing state
+    const igr = useSelector((state) => state.burgerBuilderReducer.ingredients);
+    const tPrice = useSelector(
+        (state) => state.burgerBuilderReducer.totalPrice
+    );
+    const error = useSelector((state) => state.burgerBuilderReducer.error);
+    const isAuthenticated = useSelector(
+        (state) => state.authReducer.token !== null
+    );
+
     useEffect(() => {
-        onFetchIngredients(
-            "https://react-my-burger-d4cec.firebaseio.com/ingredients.json"
-        );
+        // onFetchIngredients(
+        //     "https://react-my-burger-d4cec.firebaseio.com/ingredients.json"
+        // );
     }, [onFetchIngredients]);
 
     const updatePurchaseState = (ingredients) => {
@@ -34,8 +54,8 @@ const BurgerBuilder = (props) => {
     };
 
     const purchaseHandler = () => {
-        if (!props.isAuthenticated) {
-            props.onSetAuthPath("/checkout");
+        if (!isAuthenticated) {
+            onSetAuthPath("/checkout");
             props.history.push("/auth");
         } else {
             setPurchasing(true);
@@ -47,12 +67,12 @@ const BurgerBuilder = (props) => {
     };
 
     const purchaseContinueHandler = () => {
-        props.onPurchaseInit();
+        onPurchaseInit();
         props.history.push("checkout");
     };
 
     const disableInfo = {
-        ...props.igr,
+        ...igr,
     };
 
     for (let key in disableInfo) {
@@ -60,34 +80,34 @@ const BurgerBuilder = (props) => {
     }
     let orderSummary = null;
 
-    let burger = props.error ? (
+    let burger = error ? (
         <h2 style={{ textAlign: "center" }}>
             Ooops.... <br /> Data Cannot be Found!!
         </h2>
     ) : (
         <Spinner />
     );
-    if (props.igr) {
+    if (igr) {
         burger = (
             <Aux>
-                <Burger ingredients={props.igr} />
+                <Burger ingredients={igr} />
                 <BuildControls
-                    ingredientAdded={props.onAddIngredients}
-                    ingredientRemoved={props.onRemoveIngredients}
+                    ingredientAdded={onAddIngredients}
+                    ingredientRemoved={onRemoveIngredients}
                     disabled={disableInfo}
-                    price={props.tPrice}
-                    purchasable={updatePurchaseState(props.igr)}
+                    price={tPrice}
+                    purchasable={updatePurchaseState(igr)}
                     ordered={purchaseHandler}
-                    isAuthenticated={props.isAuthenticated}
+                    isAuthenticated={isAuthenticated}
                 />
             </Aux>
         );
         orderSummary = (
             <OrderSummary
-                ingredients={props.igr}
+                ingredients={igr}
                 purchaseCancelled={purchaseCancelHandler}
                 purchaseContinued={purchaseContinueHandler}
-                price={props.tPrice.toFixed(2)}
+                price={tPrice.toFixed(2)}
             />
         );
     }
@@ -104,28 +124,4 @@ const BurgerBuilder = (props) => {
     );
 };
 
-const mapStateToProps = (state) => {
-    return {
-        igr: state.burgerBuilderReducer.ingredients,
-        tPrice: state.burgerBuilderReducer.totalPrice,
-        error: state.burgerBuilderReducer.error,
-        isAuthenticated: state.authReducer.token !== null,
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onAddIngredients: (ingredientName) =>
-            dispatch(action.addIngredient(ingredientName)),
-        onRemoveIngredients: (ingredientName) =>
-            dispatch(action.removeIngredient(ingredientName)),
-        onFetchIngredients: (url) => dispatch(action.fetchIngredients(url)),
-        onPurchaseInit: () => dispatch(action.purchaseInit()),
-        onSetAuthPath: (path) => dispatch(action.authSetPathRedeirect(path)),
-    };
-};
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(withErrorHandler(BurgerBuilder, axios));
+export default withErrorHandler(BurgerBuilder, axios);
